@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.DS_Store
+.env
+.env.*
+.metis/secrets.json
+.metis/sessions/
+**/.metis/sessions/
+**/.metis/*.log
+*.log
+coverage/
+.nyc_output
+temp/
+tmp/
+.metis_tmp_*

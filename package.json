@@ -1,0 +1,68 @@
+{
+  "name": "metis-code",
+  "version": "2.3.0",
+  "description": "Metis Code - Groq-powered coding CLI agent with ultra-fast inference",
+  "private": false,
+  "bin": {
+    "metiscode": "dist/cli/index.js",
+    "metis": "dist/cli/index.js"
+  },
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "assets",
+    "README.md",
+    "HEADLESS.md",
+    "CLAUDE.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "compile": "tsc -p tsconfig.json",
+    "start": "node dist/cli/index.js",
+    "metiscode": "node dist/cli/index.js",
+    "metis": "node dist/cli/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepare": "npm run build",
+    "hello": "ts-node src/hello.ts"
+  },
+  "keywords": [
+    "cli",
+    "ai",
+    "agent",
+    "coding",
+    "assistant",
+    "development",
+    "metis",
+    "groq",
+    "tool-calling",
+    "automation"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@types/inquirer": "^9.0.9",
+    "@types/uuid": "^10.0.0",
+    "commander": "^12.1.0",
+    "diff": "^5.2.0",
+    "inquirer": "^12.9.6",
+    "js-yaml": "^4.1.0",
+    "kleur": "^4.1.5",
+    "node-fetch": "^2.7.0",
+    "uuid": "^11.1.0",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.12.12",
+    "@types/node-fetch": "^2.6.13",
+    "@types/ws": "^8.18.1",
+    "tsup": "^8.0.2",
+    "typescript": "^5.5.4",
+    "vitest": "^1.6.0"
+  }
+}

@@ -1,0 +1,44 @@
+# Source files
+src/
+tsconfig.json
+tsup.config.ts
+
+# Development files
+.metis/
+node_modules/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing files
+tests/
+*.test.ts
+*.test.js
+
+# Development configs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Assets not needed for npm package
+docs/
+assets/
+
+# Build artifacts except dist
+build/
+coverage/
+
+# Git
+.git/
+.gitignore
