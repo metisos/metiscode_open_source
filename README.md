@@ -262,11 +262,8 @@ metiscode mcp disconnect myserver
 
 ```bash
 # Set API key globally (works in all projects)
-metiscode config set apikey sk-your-openai-key-here
-
-# Configure different providers
-metiscode config set provider anthropic
-metiscode config set apikey sk-ant-your-anthropic-key-here
+metiscode config set apikey gsk_your-groq-key-here
+metiscode config set model llama-3.3-70b-versatile
 
 # View current configuration
 metiscode config show
@@ -275,8 +272,8 @@ metiscode config show
 ### API Key Priority System
 
 ```
-1. Environment variables (OPENAI_API_KEY, etc.) - highest priority
-2. Global config (~/.metis/secrets.json) - recommended  
+1. Environment variable (GROQ_API_KEY) - highest priority
+2. Global config (~/.metis/secrets.json) - recommended
 3. Local project config (./.metis/secrets.json) - legacy
 ```
 
@@ -291,22 +288,17 @@ metiscode migrate apikeys
 
 ## Configuration System
 
-### Provider & Model Configuration
+### Model Configuration
 
 ```bash
-# Set AI provider
-metiscode config set provider openai        # OpenAI GPT models
-metiscode config set provider anthropic     # Anthropic Claude models  
-metiscode config set provider groq          # Groq models
-
 # Set specific model
-metiscode config set model gpt-4o                      # OpenAI
-metiscode config set model claude-3-5-sonnet-20241022  # Anthropic
-metiscode config set model llama-3.1-70b-versatile     # Groq
+metiscode config set model llama-3.3-70b-versatile
+metiscode config set model llama-3.1-70b-versatile
+metiscode config set model mixtral-8x7b-32768
 
 # Configure settings
 metiscode config set temperature 0.7                   # Set temperature
-metiscode config set apikey sk-proj-...                # Global API key
+metiscode config set apikey gsk_...                    # Global API key
 
 # View current configuration
 metiscode config show
@@ -314,19 +306,8 @@ metiscode config show
 
 ### Supported Models
 
-**OpenAI:**
-- `gpt-4o` (recommended)
-- `gpt-4o-mini`
-- `gpt-4-turbo`
-- `gpt-4`
-- `gpt-3.5-turbo`
-
-**Anthropic:**
-- `claude-3-5-sonnet-20241022` (recommended)
-- `claude-3-5-haiku-20241022`
-- `claude-3-opus-20240229`
-
-**Groq:**
+**Groq (Ultra-Fast Inference):**
+- `llama-3.3-70b-versatile` (recommended - default)
 - `llama-3.1-70b-versatile`
 - `llama-3.1-8b-instant`
 - `mixtral-8x7b-32768`
@@ -609,8 +590,8 @@ behavior:
   - "Focus on maintainable code that supports rapid iteration"
 
 model_preferences:
-  - "claude-3-5-sonnet-20241022"
-  - "gpt-4o"
+  - "llama-3.3-70b-versatile"
+  - "llama-3.1-70b-versatile"
 ```
 
 ### Persona Loading Priority
@@ -723,11 +704,9 @@ metiscode migrate apikeys  # Move to global config
 
 ### Global Configuration
 
-**`~/.metis/secrets.json`** (Global API Keys - Recommended)
+**`~/.metis/secrets.json`** (Global API Key - Recommended)
 ```json
 {
-  "openai": "sk-proj-...",
-  "anthropic": "sk-ant-...", 
   "groq": "gsk_..."
 }
 ```
@@ -737,8 +716,8 @@ metiscode migrate apikeys  # Move to global config
 **`metis.config.json`**
 ```json
 {
-  "provider": "openai",
-  "model": "gpt-4o", 
+  "provider": "groq",
+  "model": "llama-3.3-70b-versatile",
   "temperature": 0.2,
   "safety": {
     "dryRun": false,
@@ -835,15 +814,14 @@ metiscode
 ### Global Configuration Setup
 ```bash
 # One-time global setup
-metiscode config set apikey sk-your-openai-key
-metiscode config set provider openai
-metiscode config set model gpt-4o
+metiscode config set apikey gsk_your-groq-key
+metiscode config set model llama-3.3-70b-versatile
 
 # Now works from any project folder
 cd ~/project1
 metiscode "implement user auth"
 
-cd ~/project2  
+cd ~/project2
 metiscode "fix the deployment script"
 
 cd ~/project3
@@ -931,8 +909,8 @@ docs/                   # Documentation
 
 **API Key Not Configured**
 ```
-OpenAI API key missing
-Solution: metiscode config set apikey your-api-key
+Groq API key missing
+Solution: metiscode config set apikey gsk_your-groq-key
 ```
 
 **Agent Creation Failed**
