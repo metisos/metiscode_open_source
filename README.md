@@ -2,30 +2,30 @@
 
 A comprehensive CLI tool powered by Groq that provides intelligent coding assistance with seamless tool integration, advanced session management, and specialized sub-agents. Built to achieve Claude Code parity with ultra-fast Groq inference.
 
-## ✨ Key Features
+## Key Features
 
-- **🎯 Interactive Session Management**: Claude Code-like experience with persistent sessions and recovery
-- **🤖 Headless Mode**: Run non-interactively in CI/CD, automation scripts, or when called by other AI agents
-- **📋 Collaborative Planning Mode**: Define requirements and generate Agent.md files before coding
-- **🚀 Sub-Agents Architecture**: Specialized AI agents with unique personas, skills, and workflows
-- **🧠 Hierarchical Memory System**: Agent.md files with auto-compaction and intelligent context management
-- **🔄 Advanced Permission System**: Approval gates with session-wide approvals and cycling modes
-- **📁 Multi-file Operations**: Batch editing, symbol renaming, and cross-file refactoring
-- **💾 Session Persistence**: Automatic state recovery across CLI restarts
-- **🌐 MCP Protocol Support**: Extensible Model Context Protocol for server/client architecture
-- **🔑 Global API Configuration**: One-time setup works across all projects
-- **🎭 Persona System**: Specialized AI personalities for different development contexts
-- **🔍 Code Preview**: Before/after diffs in approval dialogs like Claude Code
-- **⚡ Enhanced Tool Registry**: Comprehensive file, git, search, and system operations
-- **🛡️ Safety First**: Built-in safety features with intelligent approval workflows
+- **Interactive Session Management**: Claude Code-like experience with persistent sessions and recovery
+- **Headless Mode**: Run non-interactively in CI/CD, automation scripts, or when called by other AI agents
+- **Collaborative Planning Mode**: Define requirements and generate Agent.md files before coding
+- **Sub-Agents Architecture**: Specialized AI agents with unique personas, skills, and workflows
+- **Hierarchical Memory System**: Agent.md files with auto-compaction and intelligent context management
+- **Advanced Permission System**: Approval gates with session-wide approvals and cycling modes
+- **Multi-file Operations**: Batch editing, symbol renaming, and cross-file refactoring
+- **Session Persistence**: Automatic state recovery across CLI restarts
+- **MCP Protocol Support**: Extensible Model Context Protocol for server/client architecture
+- **Global API Configuration**: One-time setup works across all projects
+- **Persona System**: Specialized AI personalities for different development contexts
+- **Code Preview**: Before/after diffs in approval dialogs like Claude Code
+- **Enhanced Tool Registry**: Comprehensive file, git, search, and system operations
+- **Safety First**: Built-in safety features with intelligent approval workflows
 
-## 📦 Installation
+## Installation
 
 ```bash
 npm install -g metis-code
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. One-Time Global Setup
 
@@ -112,10 +112,10 @@ metiscode --auto-accept "implement error handling"
 ```
 
 **Headless mode features:**
-- ✅ **Auto-approves all operations** (no prompts)
-- ✅ **Non-interactive** (perfect for scripts)
-- ✅ **CI/CD ready** (auto-detects CI environments)
-- ✅ **Safe by default** (dangerous commands still blocked)
+- **Auto-approves all operations** (no prompts)
+- **Non-interactive** (perfect for scripts)
+- **CI/CD ready** (auto-detects CI environments)
+- **Safe by default** (dangerous commands still blocked)
 
 **See [HEADLESS.md](./HEADLESS.md) for comprehensive guide on:**
 - CI/CD integration (GitHub Actions, GitLab CI, Docker)
@@ -123,7 +123,7 @@ metiscode --auto-accept "implement error handling"
 - Automation scripts and batch processing
 - Security best practices
 
-## 🤖 Sub-Agents System
+## Sub-Agents System
 
 ### Specialized AI Agents
 
@@ -202,7 +202,7 @@ metiscode agents health
 metiscode agents cleanup
 ```
 
-## 🌐 MCP (Model Context Protocol) Integration
+## MCP (Model Context Protocol) Integration
 
 ### Connect to MCP Servers
 
@@ -256,7 +256,7 @@ metiscode mcp remove myserver
 metiscode mcp disconnect myserver
 ```
 
-## 🔑 Global API Configuration
+## Global API Configuration
 
 ### One-Time Setup
 
@@ -289,7 +289,7 @@ metiscode migrate apikeys
 # Shows current API key sources and migrates automatically
 ```
 
-## ⚙️ Configuration System
+## Configuration System
 
 ### Provider & Model Configuration
 
@@ -331,7 +331,7 @@ metiscode config show
 - `llama-3.1-8b-instant`
 - `mixtral-8x7b-32768`
 
-## 🛡️ Permission System
+## Permission System
 
 ### Permission Modes
 
@@ -365,24 +365,24 @@ When prompted for approval, you can:
 Get Claude Code-style before/after diffs:
 
 ```
-🔒 Approval Required
+Approval Required
 
 Operation: Execute write_file
 Description: Write content to example.ts
-Risk Level: ⚡ MEDIUM
+Risk Level: MEDIUM
 
-👀 Code Preview:
-📝 example.ts (modify)
+Code Preview:
+example.ts (modify)
 Lines 1-5:
 - 1: const oldFunction = () => {
-- 2:   return "old value";  
+- 2:   return "old value";
 + 1: const newFunction = () => {
 + 2:   return "new value";
 
 Options: [y/n/s/a/p/v/Tab]
 ```
 
-## 📁 Advanced Features
+## Advanced Features
 
 ### Multi-file Operations
 
@@ -420,7 +420,7 @@ Options: [y/n/s/a/p/v/Tab]
 /reload    # Force refresh Agent.md files from disk
 ```
 
-## 🧠 Hierarchical Memory System
+## Hierarchical Memory System
 
 ### Agent.md Files
 
@@ -448,27 +448,27 @@ my-project/
 ```bash
 # View memory system status
 /memory
-📝 Session Memory: 15 messages (healthy)
-🎯 Project Memory: ✅ Agent.md loaded (127 lines)
+Session Memory: 15 messages (healthy)
+Project Memory: Agent.md loaded (127 lines)
 
-# View detailed Agent.md hierarchy  
+# View detailed Agent.md hierarchy
 /memory agent
-🎯 Agent.md Hierarchy
+Agent.md Hierarchy
 1. Agent.md (project)
    Location: project root
    Size: 89 lines, Modified: 2024-01-15 10:30
 
-2. Agent.md (directory)  
+2. Agent.md (directory)
    Location: src
    Size: 38 lines, Modified: 2024-01-15 09:15
 
 # Force refresh Agent.md files
 /reload
-🔄 Agent.md Files Refreshed
-✅ Loaded 2 Agent.md file(s)
+Agent.md Files Refreshed
+Loaded 2 Agent.md file(s)
 ```
 
-## 🔧 Built-in Tools & Capabilities
+## Built-in Tools & Capabilities
 
 ### File Operations
 - **read_file**: Read and analyze file contents
@@ -521,7 +521,7 @@ my-project/
 - **list_todos**: View active todos
 - **delete_todo**: Remove completed todos
 
-## 🎭 Persona System
+## Persona System
 
 Metis Code features a sophisticated persona system that allows you to customize AI behavior and personality traits for different development contexts.
 
@@ -666,7 +666,7 @@ metiscode persona generate react-ninja "React expert with modern hooks and TypeS
 metiscode persona generate db-architect "Database design and optimization specialist"
 ```
 
-## 💾 Session Persistence
+## Session Persistence
 
 ### Automatic Features
 - **Session Recovery**: Detects interrupted sessions and offers recovery
@@ -686,7 +686,7 @@ metiscode --session my-session-id
 /sessions  # Shows duration, file count, message count
 ```
 
-## 📋 Legacy CLI Commands
+## Legacy CLI Commands
 
 For backwards compatibility and automation:
 
@@ -719,7 +719,7 @@ metiscode mcp show      # List MCP servers
 metiscode migrate apikeys  # Move to global config
 ```
 
-## 📝 Configuration Files
+## Configuration Files
 
 ### Global Configuration
 
@@ -795,7 +795,7 @@ This is a React TypeScript application with Node.js backend.
 - Use devops agents for deployment
 ```
 
-## 🔍 Usage Examples
+## Usage Examples
 
 ### Multi-Agent Workflow
 ```bash
@@ -868,7 +868,7 @@ metiscode agents create devops infra-engineer
 metiscode agents exec infra-engineer "Set up a Docker containerization strategy for this Node.js application with multi-stage builds."
 ```
 
-## 🔧 Development Setup
+## Development Setup
 
 ### Prerequisites
 - Node.js 18+
@@ -925,31 +925,31 @@ tests/                  # Test suite
 docs/                   # Documentation
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
 **API Key Not Configured**
 ```
-❌ OpenAI API key missing
+OpenAI API key missing
 Solution: metiscode config set apikey your-api-key
 ```
 
 **Agent Creation Failed**
 ```
-❌ Failed to create agent: Maximum number of agents (10) reached
+Failed to create agent: Maximum number of agents (10) reached
 Solution: metiscode agents cleanup --idle
 ```
 
 **MCP Server Connection Failed**
 ```
-❌ MCP server connection failed: Connection refused
+MCP server connection failed: Connection refused
 Solution: Check server status and configuration
 ```
 
 **Permission Denied**
 ```
-❌ Operation denied by permission system
+Operation denied by permission system
 Solution: Use 'y' to approve or switch to auto-accept mode with 'a'
 ```
 
@@ -961,7 +961,7 @@ If you have existing local API keys:
 metiscode migrate apikeys
 
 # Shows what will be migrated and confirms
-✅ Successfully migrated API keys to global config
+Successfully migrated API keys to global config
 Global location: ~/.metis/secrets.json
 ```
 
@@ -991,7 +991,7 @@ metiscode config show
 metiscode models
 ```
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/amazing-feature`
@@ -1007,13 +1007,13 @@ metiscode models
 - Use conventional commit messages
 - Ensure all CI checks pass
 
-## 📄 License
+## License
 
 MIT License - see [LICENSE](./LICENSE) file for details.
 
 ---
 
-## 🔗 Links
+## Links
 
 - **npm Package**: [metis-code](https://www.npmjs.com/package/metis-code)
 - **Issues & Features**: [GitHub Issues](https://github.com/your-repo/metis-code/issues)
