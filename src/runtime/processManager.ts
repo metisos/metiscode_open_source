@@ -12,6 +12,7 @@ export interface BackgroundProcess {
   errorOutput: string[];
   exitCode?: number;
   lastOutputIndex: number;
+  terminationRequested?: boolean;
 }
 
 export class ProcessManager {
@@ -40,7 +41,7 @@ export class ProcessManager {
     const childProcess = spawn(command, args, {
       cwd: options?.cwd || process.cwd(),
       env: options?.env ? { ...process.env, ...options.env } : process.env,
-      shell: options?.shell !== undefined ? options.shell : true
+      shell: options?.shell ?? false
     });
 
     bgProcess.pid = childProcess.pid;
@@ -63,9 +64,19 @@ export class ProcessManager {
       }
     });
 
-    childProcess.on('exit', (code) => {
-      bgProcess.exitCode = code || 0;
-      bgProcess.status = code === 0 ? 'completed' : 'failed';
+    childProcess.on('exit', (code, signal) => {
+      if (code !== null) {
+        bgProcess.exitCode = code;
+      }
+
+      if (bgProcess.status !== 'killed') {
+        if (bgProcess.terminationRequested || signal === 'SIGTERM' || signal === 'SIGKILL') {
+          bgProcess.status = 'killed';
+        } else {
+          bgProcess.status = code === 0 ? 'completed' : 'failed';
+        }
+      }
+
       this.childProcesses.delete(processId);
     });
 
@@ -129,7 +140,13 @@ export class ProcessManager {
     }
 
     try {
-      childProcess.kill('SIGTERM');
+      const terminated = childProcess.kill('SIGTERM');
+
+      if (!terminated) {
+        return false;
+      }
+
+      bgProcess.terminationRequested = true;
 
       setTimeout(() => {
         if (childProcess.killed === false) {
@@ -138,6 +155,7 @@ export class ProcessManager {
       }, 5000);
 
       bgProcess.status = 'killed';
+      bgProcess.exitCode = undefined;
       return true;
     } catch (error) {
       return false;
@@ -162,7 +180,7 @@ export class ProcessManager {
   }
 
   cleanup(olderThan?: number): number {
-    const threshold = olderThan || 3600000; // 1 hour default
+    const threshold = olderThan ?? 3600000; // 1 hour default
     const now = Date.now();
     let cleaned = 0;
 

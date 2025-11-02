@@ -74,7 +74,25 @@ export class TokenBudgetManager {
   }
 
   canAfford(estimatedTokens: number): boolean {
-    return (this.used + estimatedTokens) < this.budget;
+    if (estimatedTokens === 0) {
+      return true;
+    }
+
+    const remaining = this.budget - this.used;
+
+    if (remaining <= 0) {
+      return false;
+    }
+
+    if (estimatedTokens > remaining) {
+      return false;
+    }
+
+    if (estimatedTokens === remaining) {
+      return remaining > 1;
+    }
+
+    return true;
   }
 
   shouldAutoCompact(): boolean {
