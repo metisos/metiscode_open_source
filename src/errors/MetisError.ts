@@ -149,14 +149,24 @@ export class MetisError extends Error {
   }
 
   toUserFriendlyString(): string {
-    // Clean error display like Claude Code
-    let msg = `Error: ${this.message}`;
-    
-    if (this.suggestions.length > 0 && this.suggestions[0]) {
-      // Show only the most relevant suggestion
-      msg += `\nTry: ${this.suggestions[0]}`;
+    const lines: string[] = [`❌ ${this.message}`];
+
+    if (this.suggestions.length > 0) {
+      lines.push("Suggestions:");
+      this.suggestions
+        .filter(Boolean)
+        .forEach((suggestion, index) => {
+          lines.push(`  ${index + 1}. ${suggestion}`);
+        });
     }
-    
-    return msg;
+
+    if (this.code) {
+      lines.push(`Code: ${this.code}`);
+    }
+
+    lines.push(`Category: ${this.category}`);
+    lines.push(`Recoverable: ${this.recoverable ? "yes" : "no"}`);
+
+    return lines.join("\n");
   }
 }

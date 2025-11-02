@@ -1,4 +1,5 @@
 import { spawn } from 'child_process';
+import yaml from 'js-yaml';
 import { HookConfig, HookContext, HookResult } from './types';
 
 export class HookExecutor {
@@ -33,12 +34,7 @@ export class HookExecutor {
 
       childProcess.on('close', (code) => {
         if (code === 0) {
-          let modifiedParams;
-          try {
-            modifiedParams = JSON.parse(stdout);
-          } catch {
-            // Not JSON, that's fine
-          }
+          const modifiedParams = this.extractModifiedParams(stdout);
 
           resolve({
             success: true,
@@ -82,5 +78,37 @@ export class HookExecutor {
       .replace(/\$\{filePath\}/g, context.filePath || '')
       .replace(/\$\{command\}/g, context.command || '')
       .replace(/\$\{content\}/g, context.content || '');
+  }
+
+  private extractModifiedParams(stdout: string) {
+    const trimmed = stdout.trim();
+
+    if (!trimmed) {
+      return undefined;
+    }
+
+    const candidates = new Set<string>();
+    candidates.add(trimmed);
+    candidates.add(trimmed.replace(/'/g, '"'));
+    candidates.add(
+      trimmed.replace(/([{,]\s*)([A-Za-z0-9_]+)\s*:/g, (_, prefix, key) => `${prefix}"${key}":`)
+    );
+
+    for (const candidate of candidates) {
+      try {
+        return JSON.parse(candidate);
+      } catch {
+        try {
+          const parsed = yaml.load(candidate);
+          if (parsed && typeof parsed === 'object') {
+            return parsed;
+          }
+        } catch {
+          continue;
+        }
+      }
+    }
+
+    return undefined;
   }
 }

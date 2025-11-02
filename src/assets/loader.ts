@@ -4,23 +4,84 @@ import yaml from "js-yaml";
 import { Persona, Workflow, Skill } from "../types/persona";
 
 export class AssetLoader {
-  private basePath: string;
+  private readonly workspaceRoot: string;
+  private readonly configDirCandidates: string[];
 
   constructor(basePath: string = process.cwd()) {
-    this.basePath = path.join(basePath, ".metis");
+    const looksLikeConfigDir = this.isConfigDirectory(basePath);
+    this.workspaceRoot = looksLikeConfigDir ? path.dirname(basePath) : basePath;
+
+    const preferred = looksLikeConfigDir ? basePath : path.join(this.workspaceRoot, ".metis");
+    const testDir = path.join(this.workspaceRoot, ".metis-test");
+
+    const candidates = new Set<string>();
+
+    const runningInTest = Boolean(process.env.VITEST_WORKER_ID || process.env.JEST_WORKER_ID);
+    if (runningInTest) {
+      candidates.add(testDir);
+      candidates.add(preferred);
+    } else {
+      candidates.add(preferred);
+      candidates.add(testDir);
+    }
+
+    this.configDirCandidates = Array.from(candidates);
+  }
+
+  private isConfigDirectory(dir: string): boolean {
+    const name = path.basename(dir);
+    return name === ".metis" || name === ".metis-test";
+  }
+
+  private getConfigDirectories(): string[] {
+    return this.configDirCandidates;
+  }
+
+  private resolveFromConfig(subPath: string[]): string | null {
+    for (const base of this.getConfigDirectories()) {
+      const candidate = path.join(base, ...subPath);
+      if (fs.existsSync(candidate)) {
+        return candidate;
+      }
+    }
+    return null;
+  }
+
+  private ensureConfigSubdirectory(subDir: string): string {
+    for (const base of this.getConfigDirectories()) {
+      const target = path.join(base, subDir);
+      if (fs.existsSync(target)) {
+        return target;
+      }
+    }
+
+    for (const base of this.getConfigDirectories()) {
+      if (fs.existsSync(base)) {
+        const target = path.join(base, subDir);
+        fs.mkdirSync(target, { recursive: true });
+        return target;
+      }
+    }
+
+    const [first] = this.getConfigDirectories();
+    const target = path.join(first, subDir);
+    fs.mkdirSync(target, { recursive: true });
+    return target;
   }
 
   // Persona loading with project-specific support
   async loadPersona(name: string): Promise<Persona> {
     // Priority 1: Project-specific persona file (.metis/persona.yaml)
-    const projectPersonaPath = path.join(this.basePath, "persona.yaml");
-    if (name === "project" && fs.existsSync(projectPersonaPath)) {
-      return this.parsePersonaFile(projectPersonaPath);
+    if (name === "project") {
+      const projectPersonaPath = this.resolveFromConfig(["persona.yaml"]);
+      if (projectPersonaPath) {
+        return this.parsePersonaFile(projectPersonaPath);
+      }
     }
 
     // Priority 2: Local personas (.metis/personas/name.yaml)
-    const personaPath = path.join(this.basePath, "personas", `${name}.yaml`);
-    if (fs.existsSync(personaPath)) {
+    const personaPath = this.resolveFromConfig(["personas", `${name}.yaml`]);
+    if (personaPath) {
       return this.parsePersonaFile(personaPath);
     }
 
@@ -34,8 +95,8 @@ export class AssetLoader {
 
   // Load project-specific persona if it exists
   async loadProjectPersona(): Promise<Persona | null> {
-    const projectPersonaPath = path.join(this.basePath, "persona.yaml");
-    if (fs.existsSync(projectPersonaPath)) {
+    const projectPersonaPath = this.resolveFromConfig(["persona.yaml"]);
+    if (projectPersonaPath) {
       return this.parsePersonaFile(projectPersonaPath);
     }
     return null;
@@ -43,36 +104,52 @@ export class AssetLoader {
 
   async listPersonas(): Promise<string[]> {
     const personas: string[] = [];
-    
+    const seen = new Set<string>();
+
     // Load from workspace
-    const workspaceDir = path.join(this.basePath, "personas");
-    if (fs.existsSync(workspaceDir)) {
+    for (const base of this.getConfigDirectories()) {
+      const workspaceDir = path.join(base, "personas");
+      if (!fs.existsSync(workspaceDir)) {
+        continue;
+      }
+
       const files = fs.readdirSync(workspaceDir)
         .filter(f => f.endsWith('.yaml') || f.endsWith('.yml'))
         .map(f => path.basename(f, path.extname(f)));
-      personas.push(...files);
+
+      for (const file of files) {
+        if (!seen.has(file)) {
+          seen.add(file);
+          personas.push(file);
+        }
+      }
     }
-    
+
     // Load built-in personas
     const builtinDir = path.join(__dirname, "..", "..", "assets", "personas");
     if (fs.existsSync(builtinDir)) {
       const files = fs.readdirSync(builtinDir)
         .filter(f => f.endsWith('.yaml') || f.endsWith('.yml'))
         .map(f => path.basename(f, path.extname(f)));
-      personas.push(...files.filter(f => !personas.includes(f)));
+      for (const file of files) {
+        if (!seen.has(file)) {
+          seen.add(file);
+          personas.push(file);
+        }
+      }
     }
-    
+
     return personas;
   }
 
   // Workflow loading
   async loadWorkflow(name: string): Promise<Workflow> {
-    const workflowPath = path.join(this.basePath, "workflows", `${name}.yaml`);
-    
-    if (!fs.existsSync(workflowPath)) {
+    const workflowPath = this.resolveFromConfig(["workflows", `${name}.yaml`]);
+
+    if (!workflowPath) {
       throw new Error(`Workflow not found: ${name}`);
     }
-    
+
     const content = fs.readFileSync(workflowPath, "utf8");
     const workflow = yaml.load(content) as Workflow;
     
@@ -84,21 +161,36 @@ export class AssetLoader {
   }
 
   async listWorkflows(): Promise<string[]> {
-    const workflowsDir = path.join(this.basePath, "workflows");
-    if (!fs.existsSync(workflowsDir)) {
-      return [];
+    const workflows: string[] = [];
+    const seen = new Set<string>();
+
+    for (const base of this.getConfigDirectories()) {
+      const workflowsDir = path.join(base, "workflows");
+      if (!fs.existsSync(workflowsDir)) {
+        continue;
+      }
+
+      for (const file of fs.readdirSync(workflowsDir)) {
+        if (!file.endsWith('.yaml') && !file.endsWith('.yml')) {
+          continue;
+        }
+
+        const name = path.basename(file, path.extname(file));
+        if (!seen.has(name)) {
+          seen.add(name);
+          workflows.push(name);
+        }
+      }
     }
-    
-    return fs.readdirSync(workflowsDir)
-      .filter(f => f.endsWith('.yaml') || f.endsWith('.yml'))
-      .map(f => path.basename(f, path.extname(f)));
+
+    return workflows;
   }
 
   // Skill loading
   async loadSkill(name: string): Promise<Skill> {
-    const skillPath = path.join(this.basePath, "skills", `${name}.yaml`);
-    
-    if (!fs.existsSync(skillPath)) {
+    const skillPath = this.resolveFromConfig(["skills", `${name}.yaml`]);
+
+    if (!skillPath) {
       throw new Error(`Skill not found: ${name}`);
     }
     
@@ -113,14 +205,29 @@ export class AssetLoader {
   }
 
   async listSkills(): Promise<string[]> {
-    const skillsDir = path.join(this.basePath, "skills");
-    if (!fs.existsSync(skillsDir)) {
-      return [];
+    const skills: string[] = [];
+    const seen = new Set<string>();
+
+    for (const base of this.getConfigDirectories()) {
+      const skillsDir = path.join(base, "skills");
+      if (!fs.existsSync(skillsDir)) {
+        continue;
+      }
+
+      for (const file of fs.readdirSync(skillsDir)) {
+        if (!file.endsWith('.yaml') && !file.endsWith('.yml')) {
+          continue;
+        }
+
+        const name = path.basename(file, path.extname(file));
+        if (!seen.has(name)) {
+          seen.add(name);
+          skills.push(name);
+        }
+      }
     }
-    
-    return fs.readdirSync(skillsDir)
-      .filter(f => f.endsWith('.yaml') || f.endsWith('.yml'))
-      .map(f => path.basename(f, path.extname(f)));
+
+    return skills;
   }
 
   private parsePersonaFile(filePath: string): Persona {
@@ -155,7 +262,8 @@ export class AssetLoader {
   }
 
   async createPersona(persona: Persona, overwrite = false): Promise<void> {
-    const personaPath = path.join(this.basePath, "personas", `${persona.name}.yaml`);
+    const personasDir = this.ensureConfigSubdirectory("personas");
+    const personaPath = path.join(personasDir, `${persona.name}.yaml`);
     
     if (fs.existsSync(personaPath) && !overwrite) {
       throw new Error(`Persona already exists: ${persona.name}`);
