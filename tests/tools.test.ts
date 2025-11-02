@@ -41,7 +41,8 @@ describe("ToolRegistry", () => {
       const result = await registry.execute("read_file", { path: "test-file.txt" }, mockContext);
       
       expect(result.success).toBe(true);
-      expect(result.content).toBe("Hello, World!");
+      expect(result.content).toContain("→Hello, World!");
+      expect(result.content.replace(/^\s+/, "")).toBe("1→Hello, World!");
       expect(result.metadata?.path).toBe("test-file.txt");
     } finally {
       // Clean up

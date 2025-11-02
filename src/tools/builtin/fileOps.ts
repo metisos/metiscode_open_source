@@ -30,6 +30,7 @@ const readFileHandler: ToolHandler = {
 
       // Format output like cat -n (with line numbers and tabs)
       const lines = fullContent.split('\n');
+      let selectedLines: string[];
       let formattedLines: string[];
       let metadata: any = {
         path: filePath,
@@ -50,7 +51,9 @@ const readFileHandler: ToolHandler = {
           };
         }
 
-        formattedLines = lines.slice(startIdx, endIdx).map((line, idx) => {
+        selectedLines = lines.slice(startIdx, endIdx);
+
+        formattedLines = selectedLines.map((line, idx) => {
           const lineNum = startIdx + idx + 1;
           return `${lineNum.toString().padStart(6)}→${line}`;
         });
@@ -61,8 +64,8 @@ const readFileHandler: ToolHandler = {
           total_lines: lines.length
         };
       } else {
-        // Format all lines with cat -n style (line_number→content)
-        formattedLines = lines.map((line, idx) => {
+        selectedLines = lines;
+        formattedLines = selectedLines.map((line, idx) => {
           return `${(idx + 1).toString().padStart(6)}→${line}`;
         });
       }
