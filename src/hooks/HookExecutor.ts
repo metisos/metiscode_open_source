@@ -91,7 +91,7 @@ export class HookExecutor {
     candidates.add(trimmed);
     candidates.add(trimmed.replace(/'/g, '"'));
     candidates.add(
-      trimmed.replace(/([{,]\s*)([A-Za-z0-9_]+)\s*:/g, (_, prefix, key) => `${prefix}"${key}":`)
+      trimmed.replace(/([{,]\s*)([A-Za-z0-9_-]+)\s*:/g, (_, prefix, key) => `${prefix}"${key}":`)
     );
 
     for (const candidate of candidates) {

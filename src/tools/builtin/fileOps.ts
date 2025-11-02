@@ -31,6 +31,7 @@ const readFileHandler: ToolHandler = {
       // Format output like cat -n (with line numbers and tabs)
       const lines = fullContent.split('\n');
       let selectedLines: string[];
+      let formattedLines: string[];
       let metadata: any = {
         path: filePath,
         size: stats.size,
@@ -52,6 +53,11 @@ const readFileHandler: ToolHandler = {
 
         selectedLines = lines.slice(startIdx, endIdx);
 
+        formattedLines = selectedLines.map((line, idx) => {
+          const lineNum = startIdx + idx + 1;
+          return `${lineNum.toString().padStart(6)}→${line}`;
+        });
+
         metadata.line_range = {
           start: startIdx + 1,
           end: endIdx,
@@ -59,9 +65,12 @@ const readFileHandler: ToolHandler = {
         };
       } else {
         selectedLines = lines;
+        formattedLines = selectedLines.map((line, idx) => {
+          return `${(idx + 1).toString().padStart(6)}→${line}`;
+        });
       }
 
-      const content = selectedLines.join('\n');
+      const content = formattedLines.join('\n');
 
       return {
         success: true,
